@@ -79,6 +79,7 @@ $('#link-form').addEventListener('submit',e=>{
 const wallpaperKey='homepage-wallpaper';
 const wallpaperLayer=$('.backdrop-image');
 const backdropRoot=$('.backdrop');
+let sessionWallpaperUrl='';
 function applyWallpaper(dataUrl){
   wallpaperLayer.style.backgroundImage=`url("${dataUrl}")`;
   wallpaperLayer.classList.add('has-image');
@@ -116,11 +117,18 @@ $('#wallpaper-input').addEventListener('change',async e=>{
   const file=e.target.files?.[0];e.target.value='';if(!file)return;
   if(!file.type.startsWith('image/')){alert('Choose an image file for your wallpaper.');return;}
   try{
+    if(sessionWallpaperUrl)URL.revokeObjectURL(sessionWallpaperUrl);
+    sessionWallpaperUrl=URL.createObjectURL(file);
+    applyWallpaper(sessionWallpaperUrl);
+  }catch{}
+  try{
     const compact=await compressWallpaper(file);
     applyWallpaper(compact);
+    if(sessionWallpaperUrl){URL.revokeObjectURL(sessionWallpaperUrl);sessionWallpaperUrl='';}
     try{localStorage.setItem(wallpaperKey,compact);}
     catch{alert('Wallpaper applied, but this browser could not save it. Try a smaller image or leave private browsing mode.');}
   }catch(error){alert(error.message||'Could not use that image. Try a smaller photo.');}
+  }catch(error){if(!sessionWallpaperUrl)alert(error.message||'Could not use that image. Try a smaller photo.');}
 });
 
 const defaultColors=['#f0aeca','#c6b6f5','#b3ded0'];let colors=defaultColors.slice();try{colors=JSON.parse(localStorage.getItem('homepage-colors'))||colors;}catch{}
