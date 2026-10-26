@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#151624" />
+  <meta name="description" content="A personal homepage." />
+  <title>homepage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true">
+    <div class="backdrop-image"></div>
+    <div class="aurora aurora-one"></div><div class="aurora aurora-two"></div>
+    <div class="horizon"></div>
+    <div class="grain"></div>
+  </div>
+
+  <main class="page-shell">
+    <header class="topbar">
+      <section class="clock-block" aria-label="Current time and date">
+        <div class="brand-mark" aria-label="homepage"><img src="favicon.svg" alt="" /><span>homepage</span></div>
+        <time class="clock" id="clock">09:41</time>
+        <p class="date" id="date">Monday, October 26</p>
+      </section>
+      <button class="weather" id="weather" type="button" aria-label="Set weather location">
+        <span class="weather-icon" id="weather-icon" aria-hidden="true">☾</span>
+        <span class="weather-copy"><strong id="temperature">—°</strong><span id="weather-description">set your location</span></span>
+        <span class="weather-place" id="weather-place">WEATHER · SET LOCATION</span>
+      </button>
+    </header>
+
+    <section class="welcome" aria-label="Homepage"><span class="welcome-moon" aria-hidden="true">☾<i>✦</i><b>·</b></span></section>
+
+    <section class="favourites" aria-labelledby="favourites-title">
+      <div class="section-heading">
+        <div><h2 id="favourites-title">Favourites</h2></div>
+        <button class="text-button edit-button" id="edit-favourites" type="button"><span aria-hidden="true">＋</span> <span id="edit-label">Add a link</span></button>
+      </div>
+      <div class="favourite-grid" id="favourite-grid"></div>
+      <p class="edit-hint" id="edit-hint" hidden>Tap a card to edit it.</p>
+    </section>
+
+    <footer class="bottom-area">
+      <div class="bottom-tools">
+        <button class="quiet-button" id="wallpaper-button" type="button" aria-label="Change wallpaper"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/><circle cx="9" cy="9" r="1.7"/><path d="m5 17 4.1-4.2a1.2 1.2 0 0 1 1.8 0l2.2 2.3 1.7-1.8a1.2 1.2 0 0 1 1.8 0L20 17"/></svg><span>Wallpaper</span></button>
+        <span class="tool-divider"></span>
+        <button class="quiet-button" id="settings-button" type="button" aria-label="Personalize homepage"><span class="theme-dot"></span><span>Personalize</span></button>
+      </div>
+      <form class="search-wrap" id="search-form" role="search" autocomplete="off">
+        <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4 4"/></svg>
+        <input id="search-input" type="search" placeholder="What’s on your mind?" aria-label="Search the web" aria-controls="suggestions" aria-expanded="false" spellcheck="false" />
+        <kbd class="search-hint">↵</kbd>
+        <button class="search-submit" type="submit" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <div class="suggestions" id="suggestions" role="listbox" hidden></div>
+      </form>
+    </footer>
+  </main>
+
+  <input id="wallpaper-input" type="file" accept="image/*" hidden />
+  <dialog class="link-dialog" id="link-dialog">
+    <form method="dialog" id="link-form">
+      <div class="dialog-top"><div><p class="section-kicker">MAKE IT YOURS</p><h2 id="dialog-title">Add a favourite</h2></div><button class="dialog-close" type="button" id="close-dialog" aria-label="Close">×</button></div>
+      <label for="link-name">Name</label><input id="link-name" maxlength="24" placeholder="A lovely place" required />
+      <label for="link-url">Website address</label><input id="link-url" type="url" placeholder="https://example.com" required />
+      <label for="link-icon-url">Custom icon URL <span>(optional)</span></label><input id="link-icon-url" type="url" placeholder="Leave blank to use website icon" />
+      <div class="dialog-actions"><button class="dialog-cancel" type="button" id="cancel-dialog">Cancel</button><button class="dialog-save" type="submit">Save link <span>↗</span></button></div>
+    </form>
+  </dialog>
+  <dialog class="link-dialog settings-dialog" id="settings-dialog">
+    <form id="settings-form">
+      <div class="dialog-top"><div><p class="section-kicker">PERSONAL SETTINGS</p><h2>Personalize</h2></div><button class="dialog-close" type="button" id="close-settings" aria-label="Close">×</button></div>
+      <label for="weather-city">Weather location</label><div class="location-row"><input id="weather-city" placeholder="City, country" /><button type="button" id="save-location" class="small-action">Set city</button></div>
+      <button type="button" id="use-location" class="location-button">◎ Use my current location</button>
+      <label for="widget-style">Widget style</label><select id="widget-style"><option value="glass">Soft glass</option><option value="solid">Soft solid</option><option value="outline">Outline</option><option value="minimal">Minimal</option></select>
+      <label for="icon-source">Website icon source <span>(use {domain} where the site address belongs)</span></label><input id="icon-source" type="text" spellcheck="false" />
+      <div class="color-heading"><label>Custom RGB colour mood</label><button type="button" id="reset-colors" class="reset-button">Reset</button></div>
+      <div class="color-row"><label for="color-one">Pink</label><input id="color-one" type="color" value="#f0aeca" /><output id="color-one-value">#F0AECA</output></div>
+      <div class="color-row"><label for="color-two">Lilac</label><input id="color-two" type="color" value="#c6b6f5" /><output id="color-two-value">#C6B6F5</output></div>
+      <div class="color-row"><label for="color-three">Mint</label><input id="color-three" type="color" value="#b3ded0" /><output id="color-three-value">#B3DED0</output></div>
+      <div class="dialog-actions"><button class="dialog-save" type="submit">Save settings</button></div>
+    </form>
+  </dialog>
+</body>
+</html>
