@@ -150,6 +150,20 @@ $('#use-location').addEventListener('click',()=>{if(!navigator.geolocation){weat
 $('#weather').addEventListener('click',()=>settingsDialog.showModal());
 
 const searchInput=$('#search-input'), suggestions=$('#suggestions');let activeSuggestion=-1,currentSuggestions=[];
+
+// Tuck the search/tools panel away while idle; keep it open during keyboard use.
+const bottomPanel=$('#bottom-panel'),panelToggle=$('#bottom-panel-toggle');
+let panelHideTimer;
+function panelIsInUse(){return bottomPanel.contains(document.activeElement)||Boolean(document.querySelector('dialog[open]'));}
+function setPanelHidden(hidden){document.body.classList.toggle('panel-hidden',hidden);panelToggle.hidden=!hidden;panelToggle.setAttribute('aria-expanded',String(!hidden));}
+function schedulePanelHide(){clearTimeout(panelHideTimer);if(panelIsInUse())return;panelHideTimer=setTimeout(()=>{if(!panelIsInUse())setPanelHidden(true);},5000);}
+function revealPanel(){setPanelHidden(false);schedulePanelHide();}
+panelToggle.addEventListener('click',revealPanel);
+bottomPanel.addEventListener('focusin',()=>{clearTimeout(panelHideTimer);setPanelHidden(false);});
+bottomPanel.addEventListener('focusout',()=>setTimeout(schedulePanelHide,0));
+document.addEventListener('pointerdown',event=>{if(document.body.classList.contains('panel-hidden')&&!panelToggle.contains(event.target))revealPanel();else schedulePanelHide();});
+document.addEventListener('keydown',()=>{if(document.body.classList.contains('panel-hidden'))revealPanel();else schedulePanelHide();});
+schedulePanelHide();
 const suggestionSources=[
   q=>`Search the web for “${q}”`,
   q=>`“${q}” images`,
