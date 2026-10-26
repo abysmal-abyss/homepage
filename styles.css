@@ -16,3 +16,9 @@ body[data-widget-style="minimal"] .favourite-card,body[data-widget-style="minima
 .backdrop-image.has-image{opacity:1}
 .backdrop.with-wallpaper:after{display:none}
 .backdrop.with-wallpaper .aurora,.backdrop.with-wallpaper .horizon,.backdrop.with-wallpaper .grain{display:none}
+
+/* Keep the wallpaper above the page canvas in Firefox and below all content. */
+.backdrop{z-index:0}
+.page-shell{z-index:1}
+body{min-height:100vh;min-height:100svh}
+.page-shell{min-height:100vh;min-height:100svh}
