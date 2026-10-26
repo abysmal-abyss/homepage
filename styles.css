@@ -13,3 +13,6 @@ body[data-widget-style="outline"] .favourite-card,body[data-widget-style="outlin
 body[data-widget-style="minimal"] .favourite-card,body[data-widget-style="minimal"] .weather,body[data-widget-style="minimal"] .search-wrap{background:rgba(20,20,33,.06);backdrop-filter:none;border-color:transparent;box-shadow:none}.mobile-break{display:none}.welcome-kicker,.welcome-note,.footer-note{display:none}
 @media(max-width:760px){.welcome{min-height:105px;padding:8px 0}.welcome-moon{font-size:58px}.mobile-break{display:none}.weather{display:grid}.settings-dialog{padding:20px}}
 @media(max-width:760px){.favourite-card:nth-child(n+5){display:flex}}
+.backdrop-image.has-image{opacity:1}
+.backdrop.with-wallpaper:after{display:none}
+.backdrop.with-wallpaper .aurora,.backdrop.with-wallpaper .horizon,.backdrop.with-wallpaper .grain{display:none}
