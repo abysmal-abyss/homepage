@@ -11,6 +11,7 @@ function updateClock() {
 updateClock(); setInterval(updateClock, 15000);
 
 const weatherCodes = {0:['Clear','☼'],1:['Mostly clear','☼'],2:['Partly cloudy','◐'],3:['Cloudy','☁'],45:['Misty','≋'],48:['Misty','≋'],51:['Light drizzle','☂'],53:['Drizzle','☂'],55:['Drizzle','☂'],61:['Light rain','☂'],63:['Rain','☂'],65:['Heavy rain','☂'],71:['Light snow','❄'],73:['Snow','❄'],75:['Snow','❄'],80:['Passing showers','☂'],81:['Showers','☂'],82:['Heavy showers','☂'],95:['Thunderstorms','ϟ'],96:['Thunderstorms','ϟ'],99:['Thunderstorms','ϟ']};
+const weatherCodes = {0:['Clear','☼'],1:['Mostly clear','☼'],2:['Partly cloudy','◐'],3:['Cloudy','☁'],45:['Misty','≋'],48:['Misty','≋'],51:['Light drizzle','🌧️'],53:['Drizzle','🌧️'],55:['Drizzle','🌧️'],61:['Light rain','🌧️'],63:['Rain','🌧️'],65:['Heavy rain','🌧️'],71:['Light snow','❄'],73:['Snow','❄'],75:['Snow','❄'],80:['Passing showers','🌧️'],81:['Showers','🌧️'],82:['Heavy showers','🌧️'],95:['Thunderstorms','ϟ'],96:['Thunderstorms','ϟ'],99:['Thunderstorms','ϟ']};
 function weatherState(message, place='WEATHER · SET LOCATION'){$('#weather-description').textContent=message;$('#weather-place').textContent=place.toLocaleUpperCase();}
 async function loadWeather(lat, lon, place = 'Local') {
   weatherState('loading weather',place);
@@ -74,11 +75,53 @@ $('#link-form').addEventListener('submit',e=>{
   persistFavourites();editing=false;renderFavourites();closeDialog();
 });
 
-// Wallpaper image data stays local to this browser and is never uploaded.
-const wallpaperKey='homepage-wallpaper';const backdrop=$('.backdrop-image');
-try{const saved=localStorage.getItem(wallpaperKey);if(saved){backdrop.style.backgroundImage=`url("${saved}")`;backdrop.classList.add('has-image');}}catch{}
+// Reduce phone photos before saving: mobile browsers have small per-site storage limits.
+const wallpaperKey='homepage-wallpaper';
+const wallpaperLayer=$('.backdrop-image');
+const backdropRoot=$('.backdrop');
+function applyWallpaper(dataUrl){
+  wallpaperLayer.style.backgroundImage=`url("${dataUrl}")`;
+  wallpaperLayer.classList.add('has-image');
+  backdropRoot.classList.add('with-wallpaper');
+}
+function compressWallpaper(file){
+  return new Promise((resolve,reject)=>{
+    const objectUrl=URL.createObjectURL(file);
+    const image=new Image();
+    image.onload=()=>{
+      try{
+        const limit=1800;
+        const scale=Math.min(1,limit/Math.max(image.naturalWidth,image.naturalHeight));
+        const canvas=document.createElement('canvas');
+        canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));
+        canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));
+        const context=canvas.getContext('2d');
+        if(!context)throw new Error('Image editing is unavailable in this browser.');
+        context.drawImage(image,0,0,canvas.width,canvas.height);
+        let quality=.82;
+        let result=canvas.toDataURL('image/jpeg',quality);
+        while(result.length>1800000&&quality>.58){quality-=.08;result=canvas.toDataURL('image/jpeg',quality);}
+        if(result.length>1800000){canvas.width=Math.round(canvas.width*.75);canvas.height=Math.round(canvas.height*.75);context.drawImage(image,0,0,canvas.width,canvas.height);result=canvas.toDataURL('image/jpeg',.62);}
+        URL.revokeObjectURL(objectUrl);
+        resolve(result);
+      }catch(error){URL.revokeObjectURL(objectUrl);reject(error);}
+    };
+    image.onerror=()=>{URL.revokeObjectURL(objectUrl);reject(new Error('This image could not be opened. Try another photo.'));};
+    image.src=objectUrl;
+  });
+}
+try{const saved=localStorage.getItem(wallpaperKey);if(saved)applyWallpaper(saved);}catch{}
 $('#wallpaper-button').addEventListener('click',()=>$('#wallpaper-input').click());
-$('#wallpaper-input').addEventListener('change',e=>{const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{localStorage.setItem(wallpaperKey,reader.result);backdrop.style.backgroundImage=`url("${reader.result}")`;backdrop.classList.add('has-image');}catch{alert('That image is a little too large to save. Try a smaller one.');}};reader.readAsDataURL(file);e.target.value='';});
+$('#wallpaper-input').addEventListener('change',async e=>{
+  const file=e.target.files?.[0];e.target.value='';if(!file)return;
+  if(!file.type.startsWith('image/')){alert('Choose an image file for your wallpaper.');return;}
+  try{
+    const compact=await compressWallpaper(file);
+    applyWallpaper(compact);
+    try{localStorage.setItem(wallpaperKey,compact);}
+    catch{alert('Wallpaper applied, but this browser could not save it. Try a smaller image or leave private browsing mode.');}
+  }catch(error){alert(error.message||'Could not use that image. Try a smaller photo.');}
+});
 
 const defaultColors=['#f0aeca','#c6b6f5','#b3ded0'];let colors=defaultColors.slice();try{colors=JSON.parse(localStorage.getItem('homepage-colors'))||colors;}catch{}
 function applyColors(){['--pink','--lilac','--mint'].forEach((key,i)=>document.documentElement.style.setProperty(key,colors[i]));document.documentElement.style.setProperty('--accent',colors[1]);$('.theme-dot').style.background=`linear-gradient(135deg,${colors[0]},${colors[1]} 60%,${colors[2]})`;colors.forEach((color,i)=>{$(`#color-${['one','two','three'][i]}`).value=color;$(`#color-${['one','two','three'][i]}-value`).textContent=color.toUpperCase();});}
