@@ -51,11 +51,12 @@ function renderFavourites(){
     const label = document.createElement('span'); label.className='fav-label'; label.textContent=fav.name;
     const arrow = document.createElement('span'); arrow.className='fav-arrow'; arrow.textContent=editing?'✎':'↗';
     card.append(icon,label,arrow);
-    if(editing){card.href='#';card.addEventListener('click',e=>{e.preventDefault();openDialog(index);});}
+    if(editing){card.href='#';card.addEventListener('click',e=>{e.preventDefault();openDialog(index);});const remove=document.createElement('button');remove.type='button';remove.className='fav-remove';remove.textContent='×';remove.setAttribute('aria-label',`Remove ${fav.name}`);remove.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();favourites.splice(index,1);persistFavourites();renderFavourites();});card.append(remove);}
     else card.target='_blank',card.rel='noopener noreferrer';
     grid.append(card);
   });
-  $('#edit-label').textContent=editing?'Done':'Add a link';
+  $('#edit-label').textContent=editing?'Done':'Edit links';
+  $('#edit-hint').textContent=editing?'Tap a favourite to rename it. Use × to remove it.':'Tap a card to edit it.';
   $('#edit-hint').hidden=!editing;
 }
 renderFavourites();
@@ -63,7 +64,8 @@ renderFavourites();
 const dialog=$('#link-dialog'), nameInput=$('#link-name'), urlInput=$('#link-url'), iconUrlInput=$('#link-icon-url');
 function openDialog(index=-1){editingIndex=index;$('#dialog-title').textContent=index<0?'Add a favourite':'Edit a favourite';nameInput.value=index<0?'':favourites[index].name;urlInput.value=index<0?'':favourites[index].url;iconUrlInput.value=index<0?'':(favourites[index].iconUrl||'');$('#delete-link').hidden=index<0;dialog.showModal();setTimeout(()=>nameInput.focus(),40);}
 function closeDialog(){dialog.close();}
-$('#edit-favourites').addEventListener('click',()=>{if(editing){editing=false;renderFavourites();}else openDialog();});
+$('#edit-favourites').addEventListener('click',()=>{editing=!editing;renderFavourites();});
+$('#add-favourite').addEventListener('click',()=>openDialog());
 $('#close-dialog').addEventListener('click',closeDialog);$('#cancel-dialog').addEventListener('click',closeDialog);
 $('#link-form').addEventListener('submit',e=>{
   e.preventDefault();let url=urlInput.value.trim();if(!/^https?:\/\//i.test(url))url=`https://${url}`;
