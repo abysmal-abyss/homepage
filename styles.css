@@ -22,3 +22,6 @@ body[data-widget-style="minimal"] .favourite-card,body[data-widget-style="minima
 .page-shell{z-index:1}
 body{min-height:100vh;min-height:100svh}
 .page-shell{min-height:100vh;min-height:100svh}
+
+/* Give mobile browsers a little scroll range so their native toolbar can retract. */
+@media(max-width:760px){body::after{content:"";display:block;height:56px}}
