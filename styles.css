@@ -17,6 +17,14 @@ body[data-widget-style="minimal"] .favourite-card,body[data-widget-style="minima
 .backdrop.with-wallpaper:after{display:none}
 .backdrop.with-wallpaper .aurora,.backdrop.with-wallpaper .horizon,.backdrop.with-wallpaper .grain{display:none}
 
+/* Keep the bottom search area opaque behind translucent mobile browser controls. */
+.bottom-area{isolation:isolate;padding:12px 0 8px}
+.bottom-area::before{content:"";position:absolute;z-index:-1;top:0;bottom:-24px;left:50%;width:100vw;transform:translateX(-50%);background:#000}
+.dialog-delete{margin-right:auto;border:1px solid rgba(255,145,165,.38);border-radius:10px;background:rgba(170,52,76,.18);color:#ffdce3;padding:10px 14px;font:500 12px 'DM Sans',sans-serif;cursor:pointer}
+/* iOS Safari/Firefox zooms focused form controls smaller than 16px. */
+#search-input{font-size:16px;-webkit-appearance:none;appearance:none}
+@media(max-width:760px){.bottom-area{padding-bottom:calc(12px + env(safe-area-inset-bottom))}.bottom-area::before{bottom:-80px}}
+
 /* Keep the wallpaper above the page canvas in Firefox and below all content. */
 .backdrop{z-index:0}
 .page-shell{z-index:1}
