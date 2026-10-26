@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#151624" />
+  <meta name="theme-color" content="#000000" />
   <meta name="description" content="A personal homepage." />
   <title>homepage</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -68,8 +68,8 @@
       <div class="dialog-top"><div><p class="section-kicker">MAKE IT YOURS</p><h2 id="dialog-title">Add a favourite</h2></div><button class="dialog-close" type="button" id="close-dialog" aria-label="Close">×</button></div>
       <label for="link-name">Name</label><input id="link-name" maxlength="24" placeholder="A lovely place" required />
       <label for="link-url">Website address</label><input id="link-url" type="url" placeholder="https://example.com" required />
-      <label for="link-icon-url">Custom icon URL <span>(optional)</span></label><input id="link-icon-url" type="url" placeholder="Leave blank to use website icon" />
-      <div class="dialog-actions"><button class="dialog-cancel" type="button" id="cancel-dialog">Cancel</button><button class="dialog-save" type="submit">Save link <span>↗</span></button></div>
+      <label for="link-icon-url">Custom thumbnail or icon URL <span>(optional)</span></label><input id="link-icon-url" type="url" placeholder="Paste an image URL, or leave blank" />
+      <div class="dialog-actions"><button class="dialog-delete" type="button" id="delete-link" hidden>Remove</button><button class="dialog-cancel" type="button" id="cancel-dialog">Cancel</button><button class="dialog-save" type="submit">Save link <span>↗</span></button></div>
     </form>
   </dialog>
   <dialog class="link-dialog settings-dialog" id="settings-dialog">
