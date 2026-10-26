@@ -61,7 +61,7 @@ function renderFavourites(){
 renderFavourites();
 
 const dialog=$('#link-dialog'), nameInput=$('#link-name'), urlInput=$('#link-url'), iconUrlInput=$('#link-icon-url');
-function openDialog(index=-1){editingIndex=index;$('#dialog-title').textContent=index<0?'Add a favourite':'Edit a favourite';nameInput.value=index<0?'':favourites[index].name;urlInput.value=index<0?'':favourites[index].url;iconUrlInput.value=index<0?'':(favourites[index].iconUrl||'');dialog.showModal();setTimeout(()=>nameInput.focus(),40);}
+function openDialog(index=-1){editingIndex=index;$('#dialog-title').textContent=index<0?'Add a favourite':'Edit a favourite';nameInput.value=index<0?'':favourites[index].name;urlInput.value=index<0?'':favourites[index].url;iconUrlInput.value=index<0?'':(favourites[index].iconUrl||'');$('#delete-link').hidden=index<0;dialog.showModal();setTimeout(()=>nameInput.focus(),40);}
 function closeDialog(){dialog.close();}
 $('#edit-favourites').addEventListener('click',()=>{if(editing){editing=false;renderFavourites();}else openDialog();});
 $('#close-dialog').addEventListener('click',closeDialog);$('#cancel-dialog').addEventListener('click',closeDialog);
@@ -73,6 +73,7 @@ $('#link-form').addEventListener('submit',e=>{
   if(editingIndex>=0)favourites[editingIndex]=item;else favourites.push(item);
   persistFavourites();editing=false;renderFavourites();closeDialog();
 });
+$('#delete-link').addEventListener('click',()=>{if(editingIndex<0)return;favourites.splice(editingIndex,1);persistFavourites();editing=false;renderFavourites();closeDialog();});
 
 // Reduce phone photos before saving: mobile browsers have small per-site storage limits.
 const wallpaperKey='homepage-wallpaper';
@@ -149,7 +150,7 @@ $('#weather-city').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventD
 $('#use-location').addEventListener('click',()=>{if(!navigator.geolocation){weatherState('location unavailable · enter a city');return;}weatherState('waiting for permission');navigator.geolocation.getCurrentPosition(async ({coords})=>{let place='Local';try{const r=await fetch(`https://geocoding-api.open-meteo.com/v1/reverse?latitude=${coords.latitude}&longitude=${coords.longitude}&language=en&format=json`);const d=await r.json();place=d.results?.[0]?.name||place;}catch{}loadWeather(coords.latitude,coords.longitude,place);settingsDialog.close();},error=>weatherState(error.code===1?'location denied · enter a city':'location unavailable · enter a city'),{timeout:10000,maximumAge:1800000});});
 $('#weather').addEventListener('click',()=>settingsDialog.showModal());
 
-const searchInput=$('#search-input'), suggestions=$('#suggestions');let activeSuggestion=-1,currentSuggestions=[];
+const searchInput=$('#search-input'), suggestions=$('#suggestions');let activeSuggestion=-1,currentSuggestions=[],suggestionTimer;
 
 const suggestionSources=[
   q=>`Search the web for “${q}”`,
@@ -163,7 +164,8 @@ function renderSuggestions(){const q=searchInput.value.trim();suggestions.replac
   currentSuggestions.forEach((text,i)=>{const option=document.createElement('button');option.type='button';option.className='suggestion-option';option.setAttribute('role','option');option.innerHTML=`<span class="suggestion-icon">${['⌕','▧','✳','⌖'][i]}</span><span></span><span class="suggestion-hint">↵</span>`;option.children[1].textContent=text;option.addEventListener('mousedown',e=>{e.preventDefault();search(text);});suggestions.append(option);});
   suggestions.hidden=false;
 }
-function search(query){const q=query.trim();if(!q)return;const url=/^https?:\/\//i.test(q)?q:/^[\w-]+\.[a-z]{2,}(\/\S*)?$/i.test(q)?`https://${q}`:`https://www.google.com/search?q=${encodeURIComponent(q)}`;window.location.href=url;}
-searchInput.addEventListener('input',renderSuggestions);$('#search-form').addEventListener('submit',e=>{e.preventDefault();const q=currentSuggestions[activeSuggestion]||searchInput.value;search(q);});
+function search(query){const q=query.trim();if(!q)return;try{const recent=JSON.parse(localStorage.getItem('homepage-search-history')||'[]');localStorage.setItem('homepage-search-history',JSON.stringify([q,...recent.filter(item=>item!==q)].slice(0,5)));}catch{}const url=/^https?:\/\//i.test(q)?q:/^[\w-]+\.[a-z]{2,}(\/\S*)?$/i.test(q)?`https://${q}`:`https://www.google.com/search?q=${encodeURIComponent(q)}`;window.location.href=url;}
+searchInput.addEventListener('focus',()=>{if(!searchInput.value.trim()){try{const recent=JSON.parse(localStorage.getItem('homepage-search-history')||'[]');if(recent.length){suggestions.replaceChildren();recent.forEach((query,index)=>{const option=document.createElement('button');option.type='button';option.className='suggestion-option';option.setAttribute('role','option');option.innerHTML=`<span class="suggestion-icon">${index===0?'◷':'⌕'}</span><span></span>`;option.children[1].textContent=query;option.addEventListener('mousedown',e=>{e.preventDefault();search(query);});suggestions.append(option);});suggestions.hidden=false;searchInput.setAttribute('aria-expanded','true');}}catch{}}});
+searchInput.addEventListener('input',()=>{clearTimeout(suggestionTimer);renderSuggestions();const q=searchInput.value.trim();if(!q)return;suggestionTimer=setTimeout(async()=>{try{const response=await fetch(`https://suggestqueries.google.com/complete/search?client=firefox&q=${encodeURIComponent(q)}`);if(!response.ok)return;const data=await response.json();const matches=(data[1]||[]).filter(item=>typeof item==='string').slice(0,5);if(!matches.length||searchInput.value.trim()!==q)return;currentSuggestions=matches;suggestions.replaceChildren();matches.forEach((text,i)=>{const option=document.createElement('button');option.type='button';option.className='suggestion-option';option.setAttribute('role','option');option.innerHTML=`<span class="suggestion-icon">⌕</span><span></span><span class="suggestion-hint">↵</span>`;option.children[1].textContent=text;option.addEventListener('mousedown',e=>{e.preventDefault();search(text);});suggestions.append(option);});suggestions.hidden=false;searchInput.setAttribute('aria-expanded','true');}catch{}},180);});$('#search-form').addEventListener('submit',e=>{e.preventDefault();const q=activeSuggestion>=0?currentSuggestions[activeSuggestion]:searchInput.value;search(q);});
 searchInput.addEventListener('keydown',e=>{if(suggestions.hidden)return;if(e.key==='ArrowDown'){e.preventDefault();activeSuggestion=Math.min(activeSuggestion+1,currentSuggestions.length-1);}else if(e.key==='ArrowUp'){e.preventDefault();activeSuggestion=Math.max(activeSuggestion-1,0);}else if(e.key==='Escape'){suggestions.hidden=true;return;}else return;suggestions.querySelectorAll('.suggestion-option').forEach((option,i)=>option.classList.toggle('active',i===activeSuggestion));});
 document.addEventListener('click',e=>{if(!$('#search-form').contains(e.target)){suggestions.hidden=true;searchInput.setAttribute('aria-expanded','false');}});
