@@ -10,10 +10,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=20261026-auto-hide-panel" />
-  <script src="app.js?v=20261026-auto-hide-panel-2" defer></script>
+  <link rel="stylesheet" href="styles.css?v=20261026-tap-toggle-panel" />
+  <script src="app.js?v=20261026-tap-toggle-panel" defer></script>
 </head>
-<body>
+<body class="panel-hidden">
   <div class="backdrop" aria-hidden="true">
     <div class="backdrop-image"></div>
     <div class="aurora aurora-one"></div><div class="aurora aurora-two"></div>
@@ -51,6 +51,7 @@
         <button class="quiet-button" id="wallpaper-button" type="button" aria-label="Change wallpaper"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/><circle cx="9" cy="9" r="1.7"/><path d="m5 17 4.1-4.2a1.2 1.2 0 0 1 1.8 0l2.2 2.3 1.7-1.8a1.2 1.2 0 0 1 1.8 0L20 17"/></svg><span>Wallpaper</span></button>
         <span class="tool-divider"></span>
         <button class="quiet-button" id="settings-button" type="button" aria-label="Personalize homepage"><span class="theme-dot"></span><span>Personalize</span></button>
+        <button class="quiet-button panel-close" id="bottom-panel-close" type="button" aria-label="Hide bottom panel">⌄ <span>Hide</span></button>
       </div>
       <form class="search-wrap" id="search-form" role="search" autocomplete="off">
         <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4 4"/></svg>
@@ -60,7 +61,7 @@
         <div class="suggestions" id="suggestions" role="listbox" hidden></div>
       </form>
     </footer>
-    <button class="panel-peek" id="bottom-panel-toggle" type="button" aria-controls="bottom-panel" aria-expanded="true" hidden>⌃ <span>Search</span></button>
+    <button class="panel-peek" id="bottom-panel-toggle" type="button" aria-controls="bottom-panel" aria-expanded="false">⌃ <span>Show search</span></button>
   </main>
 
   <input id="wallpaper-input" type="file" accept="image/*" hidden />
