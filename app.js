@@ -151,19 +151,14 @@ $('#weather').addEventListener('click',()=>settingsDialog.showModal());
 
 const searchInput=$('#search-input'), suggestions=$('#suggestions');let activeSuggestion=-1,currentSuggestions=[];
 
-// Tuck the search/tools panel away while idle; keep it open during keyboard use.
-const bottomPanel=$('#bottom-panel'),panelToggle=$('#bottom-panel-toggle');
-let panelHideTimer;
-function panelIsInUse(){return document.activeElement===searchInput||Boolean(document.querySelector('dialog[open]'));}
-function setPanelHidden(hidden){document.body.classList.toggle('panel-hidden',hidden);panelToggle.hidden=!hidden;panelToggle.setAttribute('aria-expanded',String(!hidden));}
-function schedulePanelHide(){clearTimeout(panelHideTimer);if(panelIsInUse())return;panelHideTimer=setTimeout(()=>{if(!panelIsInUse())setPanelHidden(true);},5000);}
-function revealPanel(){setPanelHidden(false);schedulePanelHide();}
-panelToggle.addEventListener('click',revealPanel);
-bottomPanel.addEventListener('focusin',()=>{clearTimeout(panelHideTimer);setPanelHidden(false);});
-bottomPanel.addEventListener('focusout',()=>setTimeout(schedulePanelHide,0));
-document.addEventListener('pointerdown',event=>{if(document.body.classList.contains('panel-hidden')&&!panelToggle.contains(event.target))revealPanel();else schedulePanelHide();});
-document.addEventListener('keydown',()=>{if(document.body.classList.contains('panel-hidden'))revealPanel();else schedulePanelHide();});
-schedulePanelHide();
+// Keep the bottom panel tucked away until the user asks for it.
+const bottomPanel=$('#bottom-panel'),panelToggle=$('#bottom-panel-toggle'),panelClose=$('#bottom-panel-close');
+function setPanelOpen(open){document.body.classList.toggle('panel-open',open);document.body.classList.toggle('panel-hidden',!open);panelToggle.setAttribute('aria-expanded',String(open));}
+panelToggle.addEventListener('click',()=>setPanelOpen(true));
+panelClose.addEventListener('click',()=>setPanelOpen(false));
+bottomPanel.addEventListener('focusin',()=>setPanelOpen(true));
+document.addEventListener('pointerdown',event=>{if(document.body.classList.contains('panel-open')&&!bottomPanel.contains(event.target)&&!panelToggle.contains(event.target))setPanelOpen(false);});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.body.classList.contains('panel-open')&&suggestions.hidden)setPanelOpen(false);});
 const suggestionSources=[
   q=>`Search the web for “${q}”`,
   q=>`“${q}” images`,
