@@ -151,14 +151,6 @@ $('#weather').addEventListener('click',()=>settingsDialog.showModal());
 
 const searchInput=$('#search-input'), suggestions=$('#suggestions');let activeSuggestion=-1,currentSuggestions=[];
 
-// Keep the bottom panel tucked away until the user asks for it.
-const bottomPanel=$('#bottom-panel'),panelToggle=$('#bottom-panel-toggle'),panelClose=$('#bottom-panel-close');
-function setPanelOpen(open){document.body.classList.toggle('panel-open',open);document.body.classList.toggle('panel-hidden',!open);panelToggle.setAttribute('aria-expanded',String(open));}
-panelToggle.addEventListener('click',()=>setPanelOpen(true));
-panelClose.addEventListener('click',()=>setPanelOpen(false));
-bottomPanel.addEventListener('focusin',()=>setPanelOpen(true));
-document.addEventListener('pointerdown',event=>{if(document.body.classList.contains('panel-open')&&!bottomPanel.contains(event.target)&&!panelToggle.contains(event.target))setPanelOpen(false);});
-document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.body.classList.contains('panel-open')&&suggestions.hidden)setPanelOpen(false);});
 const suggestionSources=[
   q=>`Search the web for “${q}”`,
   q=>`“${q}” images`,
