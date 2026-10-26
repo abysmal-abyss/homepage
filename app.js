@@ -10,7 +10,6 @@ function updateClock() {
 }
 updateClock(); setInterval(updateClock, 15000);
 
-const weatherCodes = {0:['Clear','☼'],1:['Mostly clear','☼'],2:['Partly cloudy','◐'],3:['Cloudy','☁'],45:['Misty','≋'],48:['Misty','≋'],51:['Light drizzle','☂'],53:['Drizzle','☂'],55:['Drizzle','☂'],61:['Light rain','☂'],63:['Rain','☂'],65:['Heavy rain','☂'],71:['Light snow','❄'],73:['Snow','❄'],75:['Snow','❄'],80:['Passing showers','☂'],81:['Showers','☂'],82:['Heavy showers','☂'],95:['Thunderstorms','ϟ'],96:['Thunderstorms','ϟ'],99:['Thunderstorms','ϟ']};
 const weatherCodes = {0:['Clear','☼'],1:['Mostly clear','☼'],2:['Partly cloudy','◐'],3:['Cloudy','☁'],45:['Misty','≋'],48:['Misty','≋'],51:['Light drizzle','🌧️'],53:['Drizzle','🌧️'],55:['Drizzle','🌧️'],61:['Light rain','🌧️'],63:['Rain','🌧️'],65:['Heavy rain','🌧️'],71:['Light snow','❄'],73:['Snow','❄'],75:['Snow','❄'],80:['Passing showers','🌧️'],81:['Showers','🌧️'],82:['Heavy showers','🌧️'],95:['Thunderstorms','ϟ'],96:['Thunderstorms','ϟ'],99:['Thunderstorms','ϟ']};
 function weatherState(message, place='WEATHER · SET LOCATION'){$('#weather-description').textContent=message;$('#weather-place').textContent=place.toLocaleUpperCase();}
 async function loadWeather(lat, lon, place = 'Local') {
@@ -127,7 +126,6 @@ $('#wallpaper-input').addEventListener('change',async e=>{
     if(sessionWallpaperUrl){URL.revokeObjectURL(sessionWallpaperUrl);sessionWallpaperUrl='';}
     try{localStorage.setItem(wallpaperKey,compact);}
     catch{alert('Wallpaper applied, but this browser could not save it. Try a smaller image or leave private browsing mode.');}
-  }catch(error){alert(error.message||'Could not use that image. Try a smaller photo.');}
   }catch(error){if(!sessionWallpaperUrl)alert(error.message||'Could not use that image. Try a smaller photo.');}
 });
 
