@@ -45,3 +45,18 @@ body{min-height:100vh;min-height:100svh}
 
 /* Give mobile browsers a little scroll range so their native toolbar can retract. */
 @media(max-width:760px){body::after{content:"";display:block;height:56px}}
+
+
+/* Requested homepage refinements: transparent search area and looping terminal animation. */
+.bottom-area::before{background:transparent!important}
+.bottom-area{background:transparent!important}
+.terminal-bar{background:transparent!important;border-bottom-color:rgba(208,182,255,.08)}
+.terminal-window{background:rgba(7,6,11,.38);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.terminal-output{opacity:1;animation:terminal-loop 4.8s ease-in-out infinite}
+.terminal-output:nth-child(2){animation-delay:0s}
+.terminal-output:nth-child(3){animation-delay:1.6s}
+.terminal-output:nth-child(4){animation-delay:3.2s}
+.terminal-command{animation:terminal-command-glow 2.4s ease-in-out infinite}
+@keyframes terminal-loop{0%,8%{opacity:.25;text-shadow:none}18%,68%{opacity:1;text-shadow:0 0 9px rgba(184,145,235,.28)}82%,100%{opacity:.35;text-shadow:none}}
+@keyframes terminal-command-glow{0%,100%{text-shadow:0 0 0 rgba(199,154,255,0)}50%{text-shadow:0 0 10px rgba(199,154,255,.6)}}
+@media(prefers-reduced-motion:reduce){.terminal-output,.terminal-command{animation:none!important;opacity:1!important;text-shadow:none!important}}
